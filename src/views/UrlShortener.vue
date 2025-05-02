@@ -33,6 +33,12 @@
         this.error = '';
         this.shortenedUrl = '';
         const apiUrl = `${API_BASE_URL}/shorten`;
+
+        if (!API_BASE_URL) {
+         this.error = 'API Base URL is not configured. Please check environment variables.';
+         console.error("Error: VITE_API_BASE_URL (or VUE_APP_API_BASE_URL) is not defined in your .env files.");
+         return;
+        }
   
         try {
           const response = await axios.post(apiUrl, { url: this.url });
