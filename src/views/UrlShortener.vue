@@ -44,7 +44,22 @@
           const response = await axios.post(apiUrl, { url: this.url });
           this.shortenedUrl = response.data.shortenedUrl;
         } catch (err) {
-          this.error = err.response?.data || 'An error occurred while shortening the URL.';
+          if (err.response) {
+            // Check for specific status codes
+            if (err.response.status === 429) {
+              this.error = 'Too many requests. Please try again later.';
+            } else {
+              // Handle other HTTP errors
+              this.error = err.response.data?.message || err.response.data || `Error: ${err.response.status}`;
+            }
+          } else if (err.request) {
+            // The request was made but no response was received
+            this.error = 'No response from server. Please check your network connection.';
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            this.error = 'An error occurred while sending the request.';
+          }
+          console.error('API Error:', err);
         }
       }
     }
